@@ -6981,7 +6981,7 @@ async function fetchRegionalText(url, {
 }
 
 function decodeRssText(value) {
-  // Single-pass decode: order matters - & must be LAST to avoid double-decoding
+  // Single-pass decode: order matters - & must be FIRST to avoid double-decoding
   return String(value || '')
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
     .replace(/&/g, '&')
