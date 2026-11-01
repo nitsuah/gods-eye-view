@@ -2104,7 +2104,7 @@ function responseInstructionForToolResult(result) {
 }
 
 function createDebugSessionId() {
-  const randomPart = Math.random().toString(36).slice(2, 10);
+  const randomPart = crypto.getRandomValues(new Uint32Array(1))[0].toString(36).slice(0, 8);
   return `gev-${Date.now().toString(36)}-${randomPart}`;
 }
 
