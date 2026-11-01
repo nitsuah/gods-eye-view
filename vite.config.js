@@ -6984,11 +6984,11 @@ function decodeRssText(value) {
   // Single-pass decode: order matters - & must be LAST to avoid double-decoding
   return String(value || '')
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+    .replace(/&/g, '&')
     .replace(/"/g, '"')
     .replace(/'/g, "'")
     .replace(/</g, '<')
     .replace(/>/g, '>')
-    .replace(/&/g, '&')
     .replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();}
 
 function rssTag(block, tag) {
