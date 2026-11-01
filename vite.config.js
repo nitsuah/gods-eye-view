@@ -6258,6 +6258,7 @@ function aisWatchdogBudgets() {
  * This is a fingerprint for change detection, NOT password hashing.
  * SHA-256 is appropriate here as we only need a fast, deterministic
  * identifier for equality checks, not computational effort for secrets.
+ * codeql[js/insufficient-password-hash]: Not a password hash — fast fingerprint for change detection.
  */
 function aisKeyFingerprint() {
   const key = process.env.AISSTREAM_API_KEY;
