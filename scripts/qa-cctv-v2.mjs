@@ -657,7 +657,31 @@ async function main() {
           mod.setParams({ calibration: { cameraId: camId, patch } });
         }, { camId: activeId, patch: safePatch });
         await sleep(400);
-        geomForCorners = await page.evaluate(`(function(camId){ ${SERIALIZE_GEOM_SRC} return serializeGeom(camId); })(${JSON.stringify(activeId)})`);
+        geomForCorners = await page.evaluate((camId) => {
+          const viewer = window.__godsEyeView.viewer;
+          const time = viewer.clock.currentTime;
+          const roles = ['ray-tl', 'ray-tr', 'ray-br', 'ray-bl', 'cap'];
+          const poly = {};
+          for (const role of roles) {
+            const ent = viewer.entities.getById('cctv-' + camId + '-' + role);
+            poly[role] = ent && ent.polyline
+              ? ent.polyline.positions.getValue(time).map((p) => [p.x, p.y, p.z])
+              : null;
+          }
+          const planeEnt = viewer.entities.getById('cctv-' + camId + '-plane');
+          let plane = null;
+          if (planeEnt) {
+            const pos = planeEnt.position.getValue(time);
+            const orient = planeEnt.orientation.getValue(time);
+            const dims = planeEnt.plane.dimensions.getValue(time);
+            plane = {
+              position: [pos.x, pos.y, pos.z],
+              orientation: [orient.x, orient.y, orient.z, orient.w],
+              dimensions: [dims.x, dims.y],
+            };
+          }
+          return { poly, plane };
+        }, activeId);
         const dimsAfter = geomForCorners.plane ? JSON.stringify(geomForCorners.plane.dimensions) : null;
         patchGeometryApplied = !!dimsAfter && dimsAfter !== dimsBefore;
       }

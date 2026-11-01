@@ -35,7 +35,7 @@ http.createServer((req, res) => {
         writeFileSync(file, Buffer.from(m[2], 'base64'));
         res.writeHead(200); res.end(file);
         console.log(`saved ${file} (${Math.round(m[2].length / 1024)} KB b64)`);
-      } catch (e) { res.writeHead(500); res.end(String(e)); }
+      } catch (e) { res.writeHead(500); res.end('Internal server error'); }
     });
     return;
   }

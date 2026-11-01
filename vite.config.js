@@ -4207,7 +4207,7 @@ function buildSyntheticCctvSvg({ cameraId, label, city, status }) {
   const hue = seed % 360;
   const hue2 = (hue + 46) % 360;
   const now = new Date();
-  const ts = now.toISOString().replace('T', ' ').replace('Z', 'Z').slice(0, 20);
+  const ts = now.toISOString().replace('T', ' ').slice(0, 19);
   const safeLabel = escapeXml(label);
   const safeCity = escapeXml(city || 'GLOBAL GRID');
   const safeId = escapeXml(cameraId);
@@ -6255,6 +6255,9 @@ function aisWatchdogBudgets() {
 /**
  * Fingerprint the credential so a key change can clear the terminal
  * auth-failed state. Only a truncated digest is kept — never the key.
+ * This is a fingerprint for change detection, NOT password hashing.
+ * SHA-256 is appropriate here as we only need a fast, deterministic
+ * identifier for equality checks, not computational effort for secrets.
  */
 function aisKeyFingerprint() {
   const key = process.env.AISSTREAM_API_KEY;
@@ -6978,12 +6981,15 @@ async function fetchRegionalText(url, {
 }
 
 function decodeRssText(value) {
+  // Single-pass decode: order matters - & must be LAST to avoid double-decoding
   return String(value || '')
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
-    .replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
-    .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-}
+    .replace(/"/g, '"')
+    .replace(/'/g, "'")
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/&/g, '&')
+    .replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();}
 
 function rssTag(block, tag) {
   return decodeRssText(new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`, 'i').exec(block)?.[1] || '');
