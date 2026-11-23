@@ -817,7 +817,7 @@ export function driveBcImageCredit(raw) {
   let stripped = String(raw || '');
   // Repeat until stable so nested markup ("<<b>b>") cannot reassemble a tag,
   // then drop any stray angle bracket.
-  for (let prev = null; prev !== stripped; ) {
+  for (let prev = null; prev !== stripped;) {
     prev = stripped;
     stripped = stripped.replace(/<[^>]*>/g, '');
   }
