@@ -50,6 +50,10 @@ test('image credit strips nested markup completely', () => {
   assert.equal(driveBcImageCredit('<<b>b>Courtesy of X</b>'), 'bCourtesy of X');
   assert.equal(driveBcImageCredit('<scr<script>ipt>Courtesy of Y'), 'iptCourtesy of Y');
   assert.equal(driveBcImageCredit('<b>Courtesy of Z</b>'), 'Courtesy of Z');
+  assert.equal(driveBcImageCredit('Courtesy of Q <b'), 'Courtesy of Q b');
+  const started = performance.now();
+  driveBcImageCredit(`<b>Courtesy of W${'<'.repeat(200000)}`);
+  assert.ok(performance.now() - started < 1000);
   assert.equal(driveBcImageCredit('relies on solar power'), '');
 });
 

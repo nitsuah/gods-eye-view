@@ -805,6 +805,30 @@ export async function loadFintrafficSourcesFromOpenData() {
 }
 
 /**
+ * Remove `<...>` markup in one linear pass. A "<" inside a tag is ignored, so
+ * nested forms cannot reassemble a tag; stray ">" are dropped; the text after
+ * a "<" that never closes is kept without its brackets.
+ *
+ * @param {string} input
+ * @returns {string}
+ */
+function stripMarkup(input) {
+  let out = '';
+  let pending = '';
+  let inTag = false;
+  for (const ch of input) {
+    if (inTag) {
+      if (ch === '>') {
+        inTag = false;
+        pending = '';
+      } else if (ch !== '<') pending += ch;
+    } else if (ch === '<') inTag = true;
+    else if (ch !== '>') out += ch;
+  }
+  return inTag ? out + pending : out;
+}
+
+/**
  * The DriveBC `credit` field mixes third-party image attribution ("Images
  * courtesy of TransLink") with operational notes ("relies on solar power").
  * Only the attribution kind is carried onto the camera, HTML stripped, so a
@@ -814,14 +838,9 @@ export async function loadFintrafficSourcesFromOpenData() {
  * @returns {string}
  */
 export function driveBcImageCredit(raw) {
-  let stripped = String(raw || '');
-  // Repeat until stable so nested markup ("<<b>b>") cannot reassemble a tag,
-  // then drop any stray angle bracket.
-  for (let prev = null; prev !== stripped;) {
-    prev = stripped;
-    stripped = stripped.replace(/<[^>]*>/g, '');
-  }
-  const text = stripped.replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
+  const text = stripMarkup(String(raw || ''))
+    .replace(/\s+/g, ' ')
+    .trim();
   if (!text) return '';
   return /courtesy|provided by|presented in cooperation|city of|parks canada/i.test(
     text,
