@@ -467,11 +467,11 @@ export function decodeNumericEntities(text) {
         code > 0 && code <= 0x10ffff && (code < 0xd800 || code > 0xdfff);
       return valid ? String.fromCodePoint(code) : match;
     })
-    .replace(/&amp;/g, '&')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
     .trim();
 }
 

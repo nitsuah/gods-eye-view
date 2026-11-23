@@ -814,10 +814,14 @@ export async function loadFintrafficSourcesFromOpenData() {
  * @returns {string}
  */
 export function driveBcImageCredit(raw) {
-  const text = String(raw || '')
-    .replace(/<[^>]*>/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  let stripped = String(raw || '');
+  // Repeat until stable so nested markup ("<<b>b>") cannot reassemble a tag,
+  // then drop any stray angle bracket.
+  for (let prev = null; prev !== stripped; ) {
+    prev = stripped;
+    stripped = stripped.replace(/<[^>]*>/g, '');
+  }
+  const text = stripped.replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
   if (!text) return '';
   return /courtesy|provided by|presented in cooperation|city of|parks canada/i.test(
     text,

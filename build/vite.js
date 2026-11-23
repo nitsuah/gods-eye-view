@@ -20,7 +20,7 @@ const REPO_ROOT = fileURLToPath(new URL('..', import.meta.url))
   .replace(/\/$/, '');
 
 export function escapeFsDenyPath(path) {
-  return path.replace(/[()[\]{}*?!+@|]/g, '\\$&');
+  return path.replace(/[\\()[\]{}*?!+@|]/g, '\\$&');
 }
 
 const REPO_ROOT_GLOB = escapeFsDenyPath(REPO_ROOT);

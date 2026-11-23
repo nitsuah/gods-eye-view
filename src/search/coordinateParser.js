@@ -12,7 +12,7 @@
 
 /** One decimal-degree component: an optional hemisphere letter on either side. */
 const COMPONENT =
-  /^([NSEW])?\s*([+-]?(?:\d+(?:\.\d+)?|\.\d+))\s*°?\s*([NSEW])?$/i;
+  /^([NSEW])?\s*([+-]?(?:\d+(?:\.\d+)?|\.\d+))\s*(?:°\s*)?([NSEW])?$/i;
 
 /** RFC 5870's 2D WGS84 subset; never discard altitude or uncertainty. */
 const GEO_URI =

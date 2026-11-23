@@ -563,7 +563,19 @@ export function panelRuntime(config) {
     const view = data?.view;
     const url = data?.url || view?.url;
     if (!view || !url) return;
-    currentUrl = url;
+    // Only web addresses may become the "open" target; anything else
+    // (javascript:, data:, a relative path) is refused.
+    let safeUrl = null;
+    try {
+      const parsed = new URL(String(url));
+      if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+        safeUrl = parsed.href;
+      }
+    } catch {
+      safeUrl = null;
+    }
+    if (!safeUrl) return;
+    currentUrl = safeUrl;
     open.hidden = false;
     if (ready) return postView(view);
     queued = view;
@@ -571,7 +583,7 @@ export function panelRuntime(config) {
     started = true;
     // i18n-ignore: host-panel script, no app catalogs
     say("Loading God's Eye View…");
-    startApp(url, view).catch((error) =>
+    startApp(safeUrl, view).catch((error) =>
       // i18n-ignore: host-panel script, no app catalogs
       say(`God's Eye View could not load here: ${error?.message || error}.`),
     );
