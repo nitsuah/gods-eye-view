@@ -37,9 +37,12 @@ async function readJsonOrThrow(response, label) {
 }
 
 /** `endpoint` with exactly one trailing slash, or '' when unset. */
-function endpointBase(endpoint) {
+export function endpointBase(endpoint) {
   const text = String(endpoint || '').trim();
-  return text ? text.replace(/\/*$/, '/') : '';
+  if (!text) return '';
+  let end = text.length;
+  while (end > 0 && text[end - 1] === '/') end -= 1;
+  return `${text.slice(0, end)}/`;
 }
 
 /**

@@ -4,8 +4,11 @@ const ERROR_STORAGE_KEY = 'gev-realtime-errors';
 
 const DEBUG_LOG_URL = '/api/realtime/debug-log';
 
-function createDebugSessionId() {
-  const randomPart = Math.random().toString(36).slice(2, 10);
+export function createDebugSessionId() {
+  const bytes = globalThis.crypto.getRandomValues(new Uint8Array(6));
+  const randomPart = Array.from(bytes, (b) =>
+    b.toString(16).padStart(2, '0'),
+  ).join('');
   return `gev-${Date.now().toString(36)}-${randomPart}`;
 }
 

@@ -1,14 +1,14 @@
 import { fetchRegionalText, fetchRegionalJson } from './http.js';
 import { normalizeRegionalArticles } from '../../../src/data/regionalModel.js';
 
-function decodeRssText(value) {
+export function decodeRssText(value) {
   return String(value || '')
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
-    .replace(/&amp;/g, '&')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
     .replace(/<[^>]+>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
