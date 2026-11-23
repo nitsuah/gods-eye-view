@@ -66,7 +66,8 @@ test('ais key fingerprint is stable per key and never the key', () => {
     assert.equal(aisKeyFingerprint(), null);
     process.env.AISSTREAM_API_KEY = 'secret-one';
     const one = aisKeyFingerprint();
-    assert.match(one, /^[0-9a-f]{12}$/);
+    assert.match(one, /^key-\d+$/);
+    assert.ok(!one.includes('secret'));
     assert.equal(aisKeyFingerprint(), one);
     process.env.AISSTREAM_API_KEY = 'secret-two';
     assert.notEqual(aisKeyFingerprint(), one);

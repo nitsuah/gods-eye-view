@@ -1,4 +1,3 @@
-import { createHmac, randomBytes } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { createAisStreamAdapter } from '../../../src/data/aisStreamAdapter.js';
 import { parseSilenceTimeoutEnv } from '../../../src/data/aisWatchdog.js';
@@ -278,21 +277,24 @@ function aisWatchdogBudgets() {
   };
 }
 
-const FINGERPRINT_SALT = randomBytes(16);
+let lastSeenKey = null;
+let keyGeneration = 0;
 
 /**
- * Fingerprint the credential so a key change can clear the terminal
- * auth-failed state. Only a truncated digest is kept — never the key.
+ * Identify the current credential so a key change can clear the terminal
+ * auth-failed state. The result is a generation counter that advances when
+ * the configured key differs from the last one seen; it is derived from
+ * nothing but that comparison, so it carries no part of the key.
  */
 export function aisKeyFingerprint() {
   const key = process.env.AISSTREAM_API_KEY;
   if (!key) return null;
-  // A change detector, not a stored credential hash: keyed with a per-process
-  // random value so the digest is only comparable within this process.
-  return createHmac('sha256', FINGERPRINT_SALT)
-    .update(String(key))
-    .digest('hex')
-    .slice(0, 12);
+  const text = String(key);
+  if (text !== lastSeenKey) {
+    lastSeenKey = text;
+    keyGeneration += 1;
+  }
+  return `key-${keyGeneration}`;
 }
 
 /**
