@@ -284,7 +284,9 @@ let keyGeneration = 0;
  * Identify the current credential so a key change can clear the terminal
  * auth-failed state. The result is a generation counter that advances when
  * the configured key differs from the last one seen; it is derived from
- * nothing but that comparison, so it carries no part of the key.
+ * nothing but that comparison, so it carries no part of the key. It is only
+ * meaningful within one process lifetime: the watchdog compares it in memory
+ * (src/data/aisWatchdog.js) and nothing persists it.
  */
 export function aisKeyFingerprint() {
   const key = process.env.AISSTREAM_API_KEY;

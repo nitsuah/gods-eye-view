@@ -807,7 +807,9 @@ export async function loadFintrafficSourcesFromOpenData() {
 /**
  * Remove `<...>` markup in one linear pass. A "<" inside a tag is ignored, so
  * nested forms cannot reassemble a tag; stray ">" are dropped; the text after
- * a "<" that never closes is kept without its brackets.
+ * a "<" that never closes is kept without its brackets. Assumes simple
+ * markup: a ">" inside a quoted attribute value closes the tag early, which
+ * only leaves extra text behind and never lets a tag through.
  *
  * @param {string} input
  * @returns {string}
